@@ -13,8 +13,8 @@ const LandingPage = () => {
           <div className="relative text-center">
             <SplitText
               text="Your Personal Vault"
-              className="text-8xl text-white font-semibold block"
-              delay={100}
+              className="text-7xl text-white block"
+              delay={30}
               duration={0.6}
               ease="power3.out"
               splitType="chars"
@@ -27,8 +27,8 @@ const LandingPage = () => {
             />
             <SplitText
               text={"For\u00A0React\u00A0Components"}
-              className="text-8xl text-white font-semibold absolute left-1/2 top-full -translate-x-1/2 mt-0"
-              delay={100}
+              className="text-7xl text-white absolute left-1/2 top-full -translate-x-1/2 mt-0"
+              delay={30}
               duration={0.6}
               ease="power3.out"
               splitType="chars"
