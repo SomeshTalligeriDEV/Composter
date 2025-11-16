@@ -3,9 +3,6 @@ import DarkVeil from "../components/external/DarkVeil.jsx";
 import SplitText from "../components/external/text-animation/SplitText.jsx";
 
 const LandingPage = () => {
-  const handleAnimationComplete = () => {
-    console.log("All letters have animated!");
-  };
   return (
     <div className="w-screen h-screen font-[font] relative">
       <DarkVeil />
