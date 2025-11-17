@@ -27,7 +27,7 @@ const LoginButton = ({
         className={className}
         style={{ boxShadow: "0 6px 18px rgba(43,7,118,0.35)" }}
       >
-        {children || "Login"}
+        {children}
       </GlareHover>
     </button>
   );

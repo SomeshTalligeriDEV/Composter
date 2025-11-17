@@ -3,29 +3,49 @@ import DarkVeil from "../components/external/DarkVeil.jsx";
 import SplitText from "../components/external/text-animation/SplitText.jsx";
 import GlassSurface from "../components/external/GlassSurface.jsx";
 import LoginButton from "../components/external/LoginButton.jsx";
+import AuthModal from "../components/external/AuthModal.jsx";
+import { useState } from 'react';
 
 const LandingPage = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('login');
+
+  const openModal = (mode) => {
+    setModalMode(mode);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => setModalOpen(false);
+
+  const handleAuthSubmit = (data, mode) => {
+    // TODO: hook into real auth flow. For now just console.log and close the modal
+    console.log('auth submit', mode, data);
+    closeModal();
+  };
+
   return (
     <div className="w-screen h-screen font-[font] relative">
       <DarkVeil />
           {/* Fixed glass CTA in the navbar area (top-right) */}
           <div className="fixed top-6 right-90 z-50">
-            <div className="flex items-center gap-3">
-              <GlassSurface
-                width={140}
-                height={44}
-                borderRadius={30}
-                className="cursor-pointer px-4"
-                mixBlendMode="screen"
-              >
-                <span className="text-sm text-white font-medium">Sign up</span>
-              </GlassSurface>
+              <div className="flex items-center gap-3">
+                <GlassSurface
+                  width={140}
+                  height={44}
+                  borderRadius={30}
+                  className="cursor-pointer px-4"
+                  mixBlendMode="screen"
+                  onClick={() => openModal('signup')}
+                >
+                  <span className="text-sm text-white font-medium">Sign up</span>
+                </GlassSurface>
 
-              <LoginButton width="140px" height="44px" className="-translate-y-px">
-                Login
-              </LoginButton>
-            </div>
+                <LoginButton width="140px" height="44px" className="-translate-y-px" onClick={() => openModal('login')}>
+                  Login
+                </LoginButton>
+              </div>
           </div>
+        <AuthModal open={modalOpen} mode={modalMode} onClose={closeModal} onSubmit={handleAuthSubmit} />
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         <div className="relative text-center">
           <div className="w-full">

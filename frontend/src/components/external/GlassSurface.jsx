@@ -37,7 +37,8 @@ const GlassSurface = ({
   yChannel = 'G',
   mixBlendMode = 'difference',
   className = '',
-  style = {}
+  style = {},
+  ...rest
 }) => {
   const uniqueId = useId().replace(/:/g, '-');
   const filterId = `glass-filter-${uniqueId}`;
@@ -267,6 +268,7 @@ const GlassSurface = ({
       ref={containerRef}
       className={`${glassSurfaceClasses} ${focusVisibleClasses} ${className}`}
       style={getContainerStyles()}
+      {...rest}
     >
       <svg
         className="w-full h-full pointer-events-none absolute inset-0 opacity-0 -z-10"
