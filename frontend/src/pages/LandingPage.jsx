@@ -2,7 +2,7 @@ import React from "react";
 import DarkVeil from "../components/external/DarkVeil.jsx";
 import SplitText from "../components/external/text-animation/SplitText.jsx";
 import GlassSurface from "../components/external/GlassSurface.jsx";
-import LoginButton from "../components/external/LoginButton.jsx";
+import LoginButton from "../components/external/Button.jsx";
 import AuthModal from "../components/external/AuthModal.jsx";
 import { useState } from 'react';
 

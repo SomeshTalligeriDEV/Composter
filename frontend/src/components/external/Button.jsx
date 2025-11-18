@@ -1,7 +1,7 @@
 import React from "react";
 import GlareHover from "./GlareHover.jsx";
 
-const LoginButton = ({
+const Button = ({
   onClick,
   className = "",
   children,
@@ -33,4 +33,4 @@ const LoginButton = ({
   );
 };
 
-export default LoginButton;
+export default Button;

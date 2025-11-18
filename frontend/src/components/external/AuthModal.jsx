@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import GlassSurface from './GlassSurface.jsx';
+import Button from './Button.jsx';
 
 const AuthModal = ({ open, mode = 'login', onClose, onSubmit }) => {
   useEffect(() => {
@@ -60,8 +61,8 @@ const AuthModal = ({ open, mode = 'login', onClose, onSubmit }) => {
             </div>
 
             <div className="flex items-center justify-between"> 
-              <button type="submit" className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md font-medium">{isSignup ? 'Sign up' : 'Log in'}</button>
-              <button type="button" onClick={onClose} className="text-sm text-white/70">Cancel</button>
+              <Button onClick={handleSubmit} className='-translate-x-4'>{isSignup ? 'Sign up' : 'Log in'}</Button>
+              <button type="button" onClick={onClose} className="text-sm text-white cursor-pointer mx-1">Cancel</button>
             </div>
           </form>
         </div>
