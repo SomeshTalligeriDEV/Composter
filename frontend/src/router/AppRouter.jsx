@@ -9,8 +9,7 @@ import Installation from "../pages/docs/Installation.jsx";
 import CLI from "../pages/docs/CLI.jsx";
 import Manual from "../pages/docs/Manual.jsx";
 
-import DashboardLayout from "../components/layout/DashboardLayout.jsx";
-import DashboardHome from "../pages/Dashboard/DashboardHome.jsx";
+import DashboardLayout from "../components/layout/ComponentPageLayout.jsx";
 import ComponentsList from "../pages/Dashboard/ComponentsList.jsx";
 import ComponentDetail from "../pages/Dashboard/ComponentDetail.jsx";
 import UploadComponent from "../pages/Dashboard/UploadComponent.jsx";
@@ -32,7 +31,6 @@ const AppRouter = () => {
 
         {/*Dashboard Routes*/}
         <Route path="/app" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
           <Route path="components" element={<ComponentsList />} />
           <Route path="components/:id" element={<ComponentDetail />} />
           <Route path="upload" element={<UploadComponent />} />

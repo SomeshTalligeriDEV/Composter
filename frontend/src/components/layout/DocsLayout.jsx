@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 
 const DocsLayout = () => {
   return (
@@ -10,10 +10,42 @@ const DocsLayout = () => {
             <div className="sticky top-24">
               <h3 className="text-2xl font-medium text-zinc-400 mt-18">Docs</h3>
               <nav className="flex flex-col gap-3 mt-8">
-                <Link to="." className="text-lg font-medium text-white hover:text-violet-300">Introduction</Link>
-                <Link to="installation" className="text-lg font-medium text-white hover:text-violet-300">Installation</Link>
-                <Link to="cli" className="text-lg font-medium text-white hover:text-violet-300">CLI</Link>
-                <Link to="manual" className="text-lg font-medium text-white hover:text-violet-300">Manual</Link>
+                <NavLink
+                  to="."
+                  end
+                  className={({ isActive }) =>
+                    `text-lg px-2 py-1 rounded-l-md ${isActive ? 'text-white border-l-2 border-violet-400 bg-white/2' : 'text-zinc-300 hover:text-white hover:border-l-2 hover:border-violet-400'}`
+                  }
+                >
+                  Introduction
+                </NavLink>
+
+                <NavLink
+                  to="installation"
+                  className={({ isActive }) =>
+                    `text-lg px-2 py-1 rounded-l-md ${isActive ? 'text-white border-l-2 border-violet-400 bg-white/2' : 'text-zinc-300 hover:text-white hover:border-l-2 hover:border-violet-400'}`
+                  }
+                >
+                  Installation
+                </NavLink>
+
+                <NavLink
+                  to="cli"
+                  className={({ isActive }) =>
+                    `text-lg px-2 py-1 rounded-l-md ${isActive ? 'text-white border-l-2 border-violet-400 bg-white/2' : 'text-zinc-300 hover:text-white hover:border-l-2 hover:border-violet-400'}`
+                  }
+                >
+                  CLI
+                </NavLink>
+
+                <NavLink
+                  to="manual"
+                  className={({ isActive }) =>
+                    `text-lg px-2 py-1 rounded-l-md ${isActive ? 'text-white border-l-2 border-violet-400 bg-white/2' : 'text-zinc-300 hover:text-white hover:border-l-2 hover:border-violet-400'}`
+                  }
+                >
+                  Manual
+                </NavLink>
               </nav>
             </div>
           </aside>
