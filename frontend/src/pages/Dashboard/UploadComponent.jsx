@@ -53,7 +53,6 @@ const UploadComponent = () => {
           <div className="pt-4 flex justify-end gap-4">
             <Button variant="ghost">Cancel</Button>
             <Button>
-              <Upload size={18} className="mr-2" />
               Upload Component
             </Button>
           </div>

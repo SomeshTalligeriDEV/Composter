@@ -1,6 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 import GlareHover from "../external/GlareHover.jsx";
 
+/**
+ * Primary Button component for the application.
+ * Wraps the GlareHover effect for a premium feel.
+ */
 const Button = ({
     onClick,
     className = "",
@@ -10,7 +14,7 @@ const Button = ({
     variant = "primary", // primary, secondary, ghost
     ...props
 }) => {
-    // Base styles for the button container
+    // Common base styles for touch targets and layout
     const baseStyles = "flex items-center justify-center font-semibold transition-all duration-200 active:scale-95";
 
     if (variant === "primary") {
@@ -68,4 +72,4 @@ const Button = ({
     return null;
 };
 
-export default Button;
+export default memo(Button);

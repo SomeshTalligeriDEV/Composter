@@ -1,47 +1,58 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import DarkVeil from "../components/external/DarkVeil.jsx"; // Keep critical UI eager
 
-// Pages
-import LandingPage from "../pages/LandingPage.jsx";
-import Docs from "../pages/Docs.jsx";
+// Lazy load pages for better performance
+// This splits the bundle so users only download what they need
+const LandingPage = lazy(() => import("../pages/LandingPage.jsx"));
+const Docs = lazy(() => import("../pages/Docs.jsx"));
 
 // Auth Pages
-import Login from "../pages/Auth/Login.jsx";
-import Signup from "../pages/Auth/Signup.jsx";
-import ResetPassword from "../pages/Auth/ResetPassword.jsx";
+const Login = lazy(() => import("../pages/Auth/Login.jsx"));
+const Signup = lazy(() => import("../pages/Auth/Signup.jsx"));
+const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword.jsx"));
 
 // Dashboard Pages
-import DashboardLayout from "../components/layout/DashboardLayout.jsx";
-import DashboardHome from "../pages/Dashboard/DashboardHome.jsx";
-import ComponentsList from "../pages/Dashboard/ComponentsList.jsx";
-import ComponentDetail from "../pages/Dashboard/ComponentDetail.jsx";
-import UploadComponent from "../pages/Dashboard/UploadComponent.jsx";
-import Settings from "../pages/Dashboard/Settings.jsx";
+const DashboardLayout = lazy(() => import("../components/layout/DashboardLayout.jsx"));
+const DashboardHome = lazy(() => import("../pages/Dashboard/DashboardHome.jsx"));
+const ComponentsList = lazy(() => import("../pages/Dashboard/ComponentsList.jsx"));
+const ComponentDetail = lazy(() => import("../pages/Dashboard/ComponentDetail.jsx"));
+const UploadComponent = lazy(() => import("../pages/Dashboard/UploadComponent.jsx"));
+const Settings = lazy(() => import("../pages/Dashboard/Settings.jsx"));
+
+// Simple loading state that matches the dark theme
+const PageLoader = () => (
+  <div className="w-screen h-screen bg-[#050505] flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+  </div>
+);
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/docs" element={<Docs />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/docs" element={<Docs />} />
 
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Dashboard Routes */}
-        <Route path="/app" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="components" element={<ComponentsList />} />
-          <Route path="components/:id" element={<ComponentDetail />} />
-          <Route path="upload" element={<UploadComponent />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="account" element={<Navigate to="/app/settings" replace />} />
-          <Route path="tags" element={<div className="text-white p-8">Tags Page (Coming Soon)</div>} />
-        </Route>
-      </Routes>
+          {/* Dashboard Routes */}
+          <Route path="/app" element={<DashboardLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="components" element={<ComponentsList />} />
+            <Route path="components/:id" element={<ComponentDetail />} />
+            <Route path="upload" element={<UploadComponent />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="account" element={<Navigate to="/app/settings" replace />} />
+            <Route path="tags" element={<div className="text-white p-8">Tags Page (Coming Soon)</div>} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };

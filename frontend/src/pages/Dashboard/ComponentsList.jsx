@@ -24,8 +24,7 @@ const ComponentsList = () => {
         </div>
         <Link to="/app/upload">
           <Button>
-            <Plus size={18} />
-            New Component
+            Upload Component
           </Button>
         </Link>
       </div>

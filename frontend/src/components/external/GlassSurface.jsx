@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, useId } from 'react';
+import { useEffect, useRef, useState, useId, useMemo, memo } from 'react';
 
+// Hook to detect dark mode preference
 const useDarkMode = () => {
   const [isDark, setIsDark] = useState(false);
 
@@ -54,6 +55,7 @@ const GlassSurface = ({
 
   const isDarkMode = useDarkMode();
 
+  // Generate the SVG displacement map content
   const generateDisplacementMap = () => {
     const rect = containerRef.current?.getBoundingClientRect();
     const actualWidth = rect?.width || 400;
@@ -83,16 +85,22 @@ const GlassSurface = ({
   };
 
   const updateDisplacementMap = () => {
-    feImageRef.current?.setAttribute('href', generateDisplacementMap());
+    if (feImageRef.current) {
+      feImageRef.current.setAttribute('href', generateDisplacementMap());
+    }
   };
 
+  // Update filters when props change
   useEffect(() => {
     updateDisplacementMap();
-    [
+
+    const channels = [
       { ref: redChannelRef, offset: redOffset },
       { ref: greenChannelRef, offset: greenOffset },
       { ref: blueChannelRef, offset: blueOffset }
-    ].forEach(({ ref, offset }) => {
+    ];
+
+    channels.forEach(({ ref, offset }) => {
       if (ref.current) {
         ref.current.setAttribute('scale', (distortionScale + offset).toString());
         ref.current.setAttribute('xChannelSelector', xChannel);
@@ -100,80 +108,36 @@ const GlassSurface = ({
       }
     });
 
-    gaussianBlurRef.current?.setAttribute('stdDeviation', displace.toString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (gaussianBlurRef.current) {
+      gaussianBlurRef.current.setAttribute('stdDeviation', displace.toString());
+    }
   }, [
-    width,
-    height,
-    borderRadius,
-    borderWidth,
-    brightness,
-    opacity,
-    blur,
-    displace,
-    distortionScale,
-    redOffset,
-    greenOffset,
-    blueOffset,
-    xChannel,
-    yChannel,
-    mixBlendMode
+    width, height, borderRadius, borderWidth, brightness, opacity, blur,
+    displace, distortionScale, redOffset, greenOffset, blueOffset,
+    xChannel, yChannel, mixBlendMode
   ]);
 
+  // Handle resizing
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0);
+    const observer = new ResizeObserver(() => {
+      // Debounce slightly to avoid thrashing
+      requestAnimationFrame(updateDisplacementMap);
     });
 
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0);
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    setTimeout(updateDisplacementMap, 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width, height]);
-
-  const supportsSVGFilters = () => {
+  const supportsSVGFilters = useMemo(() => {
+    if (typeof navigator === 'undefined') return false;
     const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isFirefox = /Firefox/.test(navigator.userAgent);
+    return !(isWebkit || isFirefox);
+  }, []);
 
-    if (isWebkit || isFirefox) {
-      return false;
-    }
-
-    const div = document.createElement('div');
-    div.style.backdropFilter = `url(#${filterId})`;
-    return div.style.backdropFilter !== '';
-  };
-
-  const supportsBackdropFilter = () => {
-    if (typeof window === 'undefined') return false;
-    return CSS.supports('backdrop-filter', 'blur(10px)');
-  };
-
-  const getContainerStyles = () => {
+  const containerStyles = useMemo(() => {
     const baseStyles = {
       ...style,
       width: typeof width === 'number' ? `${width}px` : width,
@@ -183,10 +147,7 @@ const GlassSurface = ({
       '--glass-saturation': saturation
     };
 
-    const svgSupported = supportsSVGFilters();
-    const backdropFilterSupported = supportsBackdropFilter();
-
-    if (svgSupported) {
+    if (supportsSVGFilters) {
       return {
         ...baseStyles,
         background: isDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
@@ -194,135 +155,60 @@ const GlassSurface = ({
         boxShadow: isDarkMode
           ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
              0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
-             0px 4px 16px rgba(17, 17, 26, 0.05),
-             0px 8px 24px rgba(17, 17, 26, 0.05),
-             0px 16px 56px rgba(17, 17, 26, 0.05),
-             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+             0px 4px 16px rgba(17, 17, 26, 0.05)`
           : `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
              0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset,
-             0px 4px 16px rgba(17, 17, 26, 0.05),
-             0px 8px 24px rgba(17, 17, 26, 0.05),
-             0px 16px 56px rgba(17, 17, 26, 0.05),
-             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+             0px 4px 16px rgba(17, 17, 26, 0.05)`
       };
-    } else {
-      if (isDarkMode) {
-        if (!backdropFilterSupported) {
-          return {
-            ...baseStyles,
-            background: 'rgba(0, 0, 0, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
-          };
-        } else {
-          return {
-            ...baseStyles,
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
-          };
-        }
-      } else {
-        if (!backdropFilterSupported) {
-          return {
-            ...baseStyles,
-            background: 'rgba(255, 255, 255, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`
-          };
-        } else {
-          return {
-            ...baseStyles,
-            background: 'rgba(255, 255, 255, 0.25)',
-            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                        0 2px 16px 0 rgba(31, 38, 135, 0.1),
-                        inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`
-          };
-        }
-      }
     }
-  };
 
-  const glassSurfaceClasses =
-    'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out';
+    // Fallback for browsers with poor SVG filter support
+    const fallbackBg = isDarkMode
+      ? 'rgba(255, 255, 255, 0.1)'
+      : 'rgba(255, 255, 255, 0.25)';
 
-  const focusVisibleClasses = isDarkMode
-    ? 'focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2'
-    : 'focus-visible:outline-2 focus-visible:outline-[#007AFF] focus-visible:outline-offset-2';
+    return {
+      ...baseStyles,
+      background: fallbackBg,
+      backdropFilter: 'blur(12px) saturate(1.8)',
+      WebkitBackdropFilter: 'blur(12px) saturate(1.8)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)'
+    };
+  }, [width, height, borderRadius, backgroundOpacity, saturation, style, supportsSVGFilters, isDarkMode, filterId]);
 
   return (
     <div
       ref={containerRef}
-      className={`${glassSurfaceClasses} ${focusVisibleClasses} ${className}`}
-      style={getContainerStyles()}
+      className={`relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out ${className}`}
+      style={containerStyles}
       {...rest}
     >
-      <svg
-        className="w-full h-full pointer-events-none absolute inset-0 opacity-0 -z-10"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <filter id={filterId} colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
-            <feImage ref={feImageRef} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
+      {supportsSVGFilters && (
+        <svg
+          className="w-full h-full pointer-events-none absolute inset-0 opacity-0 -z-10"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <filter id={filterId} colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
+              <feImage ref={feImageRef} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
 
-            <feDisplacementMap ref={redChannelRef} in="SourceGraphic" in2="map" id="redchannel" result="dispRed" />
-            <feColorMatrix
-              in="dispRed"
-              type="matrix"
-              values="1 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-              result="red"
-            />
+              <feDisplacementMap ref={redChannelRef} in="SourceGraphic" in2="map" result="dispRed" />
+              <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red" />
 
-            <feDisplacementMap
-              ref={greenChannelRef}
-              in="SourceGraphic"
-              in2="map"
-              id="greenchannel"
-              result="dispGreen"
-            />
-            <feColorMatrix
-              in="dispGreen"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 1 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-              result="green"
-            />
+              <feDisplacementMap ref={greenChannelRef} in="SourceGraphic" in2="map" result="dispGreen" />
+              <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="green" />
 
-            <feDisplacementMap ref={blueChannelRef} in="SourceGraphic" in2="map" id="bluechannel" result="dispBlue" />
-            <feColorMatrix
-              in="dispBlue"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1 0"
-              result="blue"
-            />
+              <feDisplacementMap ref={blueChannelRef} in="SourceGraphic" in2="map" result="dispBlue" />
+              <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue" />
 
-            <feBlend in="red" in2="green" mode="screen" result="rg" />
-            <feBlend in="rg" in2="blue" mode="screen" result="output" />
-            <feGaussianBlur ref={gaussianBlurRef} in="output" stdDeviation="0.7" />
-          </filter>
-        </defs>
-      </svg>
+              <feBlend in="red" in2="green" mode="screen" result="rg" />
+              <feBlend in="rg" in2="blue" mode="screen" result="output" />
+              <feGaussianBlur ref={gaussianBlurRef} in="output" stdDeviation="0.7" />
+            </filter>
+          </defs>
+        </svg>
+      )}
 
       <div className="w-full h-full flex items-center justify-center p-2 rounded-[inherit] relative z-10">
         {children}
@@ -331,4 +217,4 @@ const GlassSurface = ({
   );
 };
 
-export default GlassSurface;
+export default memo(GlassSurface);

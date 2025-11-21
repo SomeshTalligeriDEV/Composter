@@ -1,6 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 import GlassSurface from "../external/GlassSurface.jsx";
 
+/**
+ * Reusable Card component based on the GlassSurface.
+ * Provides a consistent container with optional hover effects.
+ */
 const Card = ({
     children,
     className = "",
@@ -17,7 +21,7 @@ const Card = ({
             className={`
         ${className}
         ${hoverEffect ? 'hover:scale-[1.02] hover:brightness-110 cursor-pointer' : ''}
-      `}
+`}
             mixBlendMode="normal"
             {...props}
         >
@@ -28,4 +32,4 @@ const Card = ({
     );
 };
 
-export default Card;
+export default memo(Card);
