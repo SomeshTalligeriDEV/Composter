@@ -4,6 +4,7 @@ import DarkVeil from "../components/external/DarkVeil.jsx";
 import SplitText from "../components/external/text-animation/SplitText.jsx";
 import GlassSurface from "../components/external/GlassSurface.jsx";
 import LoginButton from "../components/external/Button.jsx";
+import logo from "../assets/logo.png";
 
 const LandingPage = () => {
   return (
@@ -16,9 +17,9 @@ const LandingPage = () => {
           {/* Logo/Brand */}
           <Link to="/" className="group flex items-center gap-3">
             <img
-              src="/logo.png"
+              src={logo}
               alt="Composter Logo"
-              className="w-8 h-8 object-contain"
+              className="w-10 h-10 object-contain"
             />
             <h1 className="text-2xl font-bold text-white hover:scale-105 transition-transform">
               Composter
