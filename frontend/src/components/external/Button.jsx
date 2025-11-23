@@ -3,6 +3,7 @@ import GlareHover from "./GlareHover.jsx";
 
 const Button = ({
   onClick,
+  type = 'button',
   className = "",
   children,
   width = "120px",
@@ -10,8 +11,9 @@ const Button = ({
 }) => {
   return (
     <button
+      type={type}
       onClick={onClick}
-      className="px-4 py-2 text-sm font-semibold text-white bg-transparent border-none flex items-center gap-2"
+      className={`px-4 py-2 text-sm font-semibold text-white bg-transparent border-none flex items-center gap-2 ${className}`}
       aria-label="Login"
     >
       <GlareHover
@@ -24,7 +26,7 @@ const Button = ({
         glareAngle={-45}
         glareSize={220}
         transitionDuration={600}
-        className={className}
+        className="w-full"
         style={{ boxShadow: "0 6px 18px rgba(43,7,118,0.35)" }}
       >
         {children}

@@ -5,3 +5,23 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  components Component[]
+}
+
+model Component {
+  id         String   @id @default(uuid())
+  title      String
+  code       String
+  categoryId String
+  userId     String
+  createdAt  DateTime @default(now())
+  category   Category @relation(fields: [categoryId], references: [id])
+}
